@@ -1,0 +1,103 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="in.flinbor.demo.smsreceiver">
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_MMS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name="in.flinbor.demo.smsreceiver.view.SmsListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+            </intent-filter>
+
+            <!-- required for Setting as default SMS messaging app -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="in.flinbor.demo.smsreceiver.view.NotificationDialogActivity"
+            android:theme="@style/TransparentTheme"/>
+
+        <!-- Local storage for SMS -->
+        <provider
+            android:name="in.flinbor.demo.smsreceiver.data.SmsContentProvider"
+            android:authorities="in.flinbor.demo.smsreceiver">
+        </provider>
+
+        <!-- A service used internally to process incoming SMS -->
+        <service android:name="in.flinbor.demo.smsreceiver.service.MessagingService"
+            android:exported="false" />
+
+        <!-- BroadcastReceiver that listens for incoming SMS messages -->
+        <!-- When app selected as default SMS app -->
+        <receiver
+            android:name="in.flinbor.demo.smsreceiver.receiver.SmsDeliver"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Briadcast when the system received an SMS,
+        ignore this when app selected as default SMS app and use SMS_DELIVER
+        Android 4.4—any attempt to abort the SMS_RECEIVED_ACTION broadcast will be ignored-->
+        <receiver android:name="in.flinbor.demo.smsreceiver.receiver.SmsReceiver"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="100">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+        </receiver>
+
+
+
+
+        <!-- STUBs RespondService & RespondService
+        then Android will be satisfied that your app is suitable to be used as the default SMS app for the system -->
+
+        <!-- STUB! BroadcastReceiver that listens for incoming MMS messages -->
+        <receiver android:name="in.flinbor.demo.smsreceiver.receiver.MmsReceiver"
+            android:permission="android.permission.BROADCAST_WAP_PUSH">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
+                <data android:mimeType="application/vnd.wap.mms-message" />
+            </intent-filter>
+        </receiver>
+
+        <!-- STUB! -> Service that delivers messages for "Quick Response" -->
+        <service android:name="in.flinbor.demo.smsreceiver.service.RespondService"
+            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>
