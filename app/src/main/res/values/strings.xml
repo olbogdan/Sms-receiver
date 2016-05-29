@@ -15,7 +15,7 @@
   -->
 
 <resources>
-    <string name="app">Flinbor Sms</string>
+    <string name="app">Sms Receiver</string>
     <string name="list.sms.empty">No sms</string>
     <string name="permission.sms.disabled">please enable SMS permission in settings</string>
     <string name="permission.sms.granted">SMS permission granted</string>
